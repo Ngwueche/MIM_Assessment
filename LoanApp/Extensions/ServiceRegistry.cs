@@ -1,8 +1,8 @@
 ﻿using LoanApp.Dtos;
+using LoanApp.Services.Implementations;
+using LoanApp.Services.Interfaces;
 using Serilog;
 namespace LoanApp.Extensions;
-
-
 
 public static class ServiceRegistration
 {
@@ -11,6 +11,8 @@ public static class ServiceRegistration
         var appSettingsSection = configuration.GetSection("AppSettings");
         services.Configure<AppSettings>(appSettingsSection);
         var appSettings = appSettingsSection.Get<AppSettings>();
+
+        services.AddScoped<ILoanApplicationService, LoanApplicationService>();
 
         Log.Logger = new LoggerConfiguration()
           .MinimumLevel.Debug()

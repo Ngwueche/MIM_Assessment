@@ -12052,6 +12052,16 @@ textarea.form-control-lg {
   .d-print-none {
     display: none !important;
   }
+    /* Hide spinners for number inputs */
+    input[type="number"].no-spinners::-webkit-outer-spin-button,
+    input[type="number"].no-spinners::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"].no-spinners {
+        -moz-appearance: textfield; /* Firefox */
+    }
 }
 
 /*# sourceMappingURL=bootstrap.css.map */

@@ -10,32 +10,92 @@
 
 <h1>Index</h1>
 
+<div>
+    <input type="search" @bind="titleFilter" @bind:event="oninput" placeholder="Search by applicant name..." />
+</div>
+
 <p>
     <a href="loanapplications/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="context.LoanApplication">
-    <PropertyColumn Property="loanapplication => loanapplication.ApplicantName" />
-    <PropertyColumn Property="loanapplication => loanapplication.LoanTerm" />
-    <PropertyColumn Property="loanapplication => loanapplication.LoanAmount" />
-    @* <PropertyColumn Property="loanapplication => loanapplication.IsActive" /> *@
-    <PropertyColumn Property="loanapplication => loanapplication.LoanStatus" />
-    <PropertyColumn Property="loanapplication => loanapplication.ApplicationDate" Title="Application Date" Format="MM/dd/yyyy" />
+<div>
+    <QuickGrid Class="table" TGridItem="LoanApplication" ItemsProvider="GetLoanApplications" ItemKey="x => x.Id" Pagination="pagination">
+        <PropertyColumn Property="loanapplication => loanapplication.ApplicantName" Title="Applicant Name" />
+        <PropertyColumn Property="loanapplication => loanapplication.LoanTerm" Title="Loan Term" />
+        <PropertyColumn Property="loanapplication => loanapplication.LoanAmount" Title="Loan Amount" />
+        <PropertyColumn Property="loanapplication => loanapplication.LoanStatus" Title="Loan Status" />
+        <PropertyColumn Property="loanapplication => loanapplication.ApplicationDate" Title="Application Date" Format="MM/dd/yyyy" />
 
-    <TemplateColumn Context="loanapplication">
-        <a href="@($"loanapplications/edit?id={loanapplication.Id}")">Edit</a> |
-        <a href="@($"loanapplications/details?id={loanapplication.Id}")">Details</a> |
-        <a href="@($"loanapplications/delete?id={loanapplication.Id}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+        <TemplateColumn Context="loanapplication">
+            <a href="@($"loanapplications/edit?id={loanapplication.Id}")">Edit</a> |
+            <a href="@($"loanapplications/details?id={loanapplication.Id}")">Details</a> |
+            <a href="@($"loanapplications/delete?id={loanapplication.Id}")">Delete</a>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
+
+<Paginator State="pagination" />
 
 @code {
-    private LoanAppContext context = default!;
+    private PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
+    private string titleFilter = string.Empty;
+    private QuickGrid<LoanApplication>? quickGridRef;
 
-    protected override void OnInitialized()
+    // Debouncer to delay search
+    private Timer? debounceTimer;
+
+    private async Task OnSearchInput(ChangeEventArgs e)
     {
-        context = DbFactory.CreateDbContext();
+        titleFilter = e.Value?.ToString() ?? string.Empty;
+
+        // Debounce the search to avoid re-fetching on every keystroke
+        debounceTimer?.Dispose();
+        debounceTimer = new Timer(async _ =>
+        {
+            await InvokeAsync(async () =>
+            {
+                if (quickGridRef != null)
+                {
+                    await quickGridRef.RefreshDataAsync();
+                }
+            });
+        }, null, 500, Timeout.Infinite); // 500ms delay
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    public async ValueTask<GridItemsProviderResult<LoanApplication>> GetLoanApplications(GridItemsProviderRequest<LoanApplication> request)
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        // Apply search filter
+        IQueryable<LoanApplication> query = context.LoanApplication.AsQueryable();
+        if (!string.IsNullOrEmpty(titleFilter))
+        {
+            query = query.Where(x => x.ApplicantName.ToLower().Contains(titleFilter.ToLower()));
+        }
+
+        // Get total count
+        var totalCount = await query.CountAsync(request.CancellationToken);
+
+        // Apply sorting and pagination
+        query = request.ApplySorting(query).Skip(request.StartIndex);
+        if (request.Count.HasValue)
+        {
+            query = query.Take(request.Count.Value);
+        }
+
+        // Fetch items
+        var items = await query.ToArrayAsync(request.CancellationToken);
+
+        // Return result
+        return new GridItemsProviderResult<LoanApplication>
+            {
+                Items = items,
+                TotalItemCount = totalCount
+            };
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        debounceTimer?.Dispose();
+    }
 }

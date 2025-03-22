@@ -1,17 +1,16 @@
 ﻿@page "/loanapplications/delete"
-@using Microsoft.EntityFrameworkCore
-@using LoanApp.Models.Entities
-@inject IDbContextFactory<LoanApp.Data.LoanAppContext> DbFactory
+@using LoanApp.Dtos
+@using LoanApp.Services.Interfaces
+@inject ILoanApplicationService loanAppService;
 @inject NavigationManager NavigationManager
-
+@rendermode InteractiveServer
 <PageTitle>Delete</PageTitle>
 
-<h1>Delete</h1>
+<h1>Delete Loan Record</h1>
 
 <p>Are you sure you want to delete this?</p>
 <div>
-    <h2>LoanApplication</h2>
-    <hr />
+
     @if (loanapplication is null)
     {
         <p><em>Loading...</em></p>
@@ -30,10 +29,6 @@
             <dd class="col-sm-10">@loanapplication.LoanAmount</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">IsActive</dt>
-            <dd class="col-sm-10">@loanapplication.IsActive</dd>
-        </dl>
-        <dl class="row">
             <dt class="col-sm-2">LoanStatus</dt>
             <dd class="col-sm-10">@loanapplication.LoanStatus</dd>
         </dl>
@@ -49,27 +44,25 @@
 </div>
 
 @code {
-    private LoanApplication? loanapplication;
+    private GetLoanApplicationDto? loanapplication;
 
     [SupplyParameterFromQuery]
     private int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbFactory.CreateDbContext();
-        loanapplication = await context.LoanApplication.FirstOrDefaultAsync(m => m.Id == Id);
+        loanapplication = await loanAppService.GetLoanApplicationByIdAsync(Id);
 
         if (loanapplication is null)
         {
-            NavigationManager.NavigateTo("notfound");
+            NavigationManager.NavigateTo("/notfound");
         }
+        //loanapplication = loanapplicationR;
     }
 
     private async Task DeleteLoanApplication()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.LoanApplication.Remove(loanapplication!);
-        await context.SaveChangesAsync();
+        await loanAppService.DeleteLoanApplicationAsync(Id);
         NavigationManager.NavigateTo("/loanapplications");
     }
 }

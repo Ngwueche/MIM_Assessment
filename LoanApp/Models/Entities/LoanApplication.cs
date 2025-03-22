@@ -21,9 +21,5 @@ namespace LoanApp.Models.Entities
         public LoanStatus LoanStatus { get; set; }
         public DateTime ApplicationDate { get; set; } = DateTime.Now;
 
-        public static implicit operator LoanApplication(GetLoanApplicationDto v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

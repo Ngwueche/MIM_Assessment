@@ -48,7 +48,7 @@ namespace LoanApp.Services.Implementations
             }
         }
 
-        private async Task<LoanApplication> GetActiveLoanRecord(int Id) => await _context.LoanApplication.Where(l => l.IsActive && l.IsActive).FirstOrDefaultAsync();
+        private async Task<LoanApplication> GetActiveLoanRecord(int Id) => await _context.LoanApplication.Where(l => l.IsActive && l.Id == Id).FirstOrDefaultAsync();
 
         public async Task<GetLoanApplicationDto> GetLoanApplicationByIdAsync(int id)
         {
@@ -56,7 +56,7 @@ namespace LoanApp.Services.Implementations
             {
                 var record = await GetActiveLoanRecord(id);
 
-                if (record is not null)
+                if (record is null)
                 {
                     Log.Information("No record found.");
                     return null;
