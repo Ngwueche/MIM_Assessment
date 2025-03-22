@@ -1,7 +1,4 @@
 ﻿@page "/loanapplications/delete"
-@using LoanApp.Dtos
-@using LoanApp.Services.Interfaces
-@inject ILoanApplicationService loanAppService;
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 <PageTitle>Delete</PageTitle>
@@ -51,7 +48,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        loanapplication = await loanAppService.GetLoanApplicationByIdAsync(Id);
+        loanapplication = await service.GetLoanApplicationByIdAsync(Id);
 
         if (loanapplication is null)
         {
@@ -62,7 +59,7 @@
 
     private async Task DeleteLoanApplication()
     {
-        await loanAppService.DeleteLoanApplicationAsync(Id);
+        await service.DeleteLoanApplicationAsync(Id);
         NavigationManager.NavigateTo("/loanapplications");
     }
 }

@@ -9,7 +9,8 @@ namespace LoanApp.Services.Interfaces
         Task<GetLoanApplicationDto> GetLoanApplicationByIdAsync(int id);
         Task<List<GetLoanApplicationDto>> GetLoanApplicationsAsync();
         Task UpdateLoanApplicationAsync(UpdateLoanApplicationDto loanDto);
-        Task UpdateLoanApplicationStatusAsync(UpdateLoanApplicationStatusDto loanDto);
+        Task ApproveLoanApplicationRequestAsync(int Id);
+        Task RejectLoanApplicationRequestAsync(int Id);
 
     }
 }

@@ -128,23 +128,42 @@ namespace LoanApp.Services.Implementations
                 throw;
             }
         }
-        public async Task UpdateLoanApplicationStatusAsync(UpdateLoanApplicationStatusDto loanDto)
+        public async Task ApproveLoanApplicationRequestAsync(int loanDto)
         {
             try
             {
-                var getRecord = await GetActiveLoanRecord(loanDto.Id);
+                var getRecord = await GetActiveLoanRecord(loanDto);
                 if (getRecord == null)
                 {
                     return;
                 }
-                getRecord.LoanStatus = (LoanStatus)loanDto.status;
+                getRecord.LoanStatus = LoanStatus.Approved;
 
-                _context.LoanApplication.Update(getRecord);
+                //_context.LoanApplication.Update(getRecord);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Log.Error("Error from UpdateLoanApplicationAsync method ==> " + ex.Message);
+                Log.Error("Error from ApproveLoanApplicationRequestAsync method ==> " + ex.Message);
+                throw;
+            }
+        }
+        public async Task RejectLoanApplicationRequestAsync(int loanDto)
+        {
+            try
+            {
+                var getRecord = await GetActiveLoanRecord(loanDto);
+                if (getRecord == null)
+                {
+                    return;
+                }
+                getRecord.LoanStatus = LoanStatus.Rejected;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error from RejectLoanApplicationStatusAsync method ==> " + ex.Message);
                 throw;
             }
         }

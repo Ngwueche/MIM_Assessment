@@ -1,9 +1,4 @@
 ﻿@page "/loanapplications/create"
-@using LoanApp.Dtos
-@using LoanApp.Services.Interfaces
-@using Serilog
-@inject ILoanApplicationService loanAppService
-@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 <PageTitle>Create</PageTitle>
 
@@ -54,7 +49,7 @@
     {
         try
         {
-        await loanAppService.AddLoanApplicationAsync(LoanApplication);
+        await service.AddLoanApplicationAsync(LoanApplication);
 
             NavigationManager.NavigateTo("/loanapplications", forceLoad: true);
         }
