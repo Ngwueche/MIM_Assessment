@@ -1,6 +1,7 @@
 ﻿using LoanApp.Data;
 using LoanApp.Dtos;
 using LoanApp.Models.Entities;
+using LoanApp.Models.Enums;
 using LoanApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -117,6 +118,26 @@ namespace LoanApp.Services.Implementations
                 getRecord.LoanTerm = loanDto.LoanTerm;
                 getRecord.LoanAmount = loanDto.LoanAmount;
                 getRecord.ApplicantName = loanDto.ApplicantName;
+
+                _context.LoanApplication.Update(getRecord);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error from UpdateLoanApplicationAsync method ==> " + ex.Message);
+                throw;
+            }
+        }
+        public async Task UpdateLoanApplicationStatusAsync(UpdateLoanApplicationStatusDto loanDto)
+        {
+            try
+            {
+                var getRecord = await GetActiveLoanRecord(loanDto.Id);
+                if (getRecord == null)
+                {
+                    return;
+                }
+                getRecord.LoanStatus = (LoanStatus)loanDto.status;
 
                 _context.LoanApplication.Update(getRecord);
                 await _context.SaveChangesAsync();

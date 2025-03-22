@@ -35,4 +35,10 @@ namespace LoanApp.Dtos
         public int LoanTerm { get; set; }
         public decimal LoanAmount { get; set; }
     }
+    public class UpdateLoanApplicationStatusDto
+    {
+        public int Id { get; set; }
+        public int status { get; set; }
+    }
 }
+

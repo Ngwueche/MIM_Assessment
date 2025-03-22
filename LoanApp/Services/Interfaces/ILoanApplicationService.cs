@@ -1,5 +1,4 @@
 ﻿using LoanApp.Dtos;
-using LoanApp.Models.Entities;
 
 namespace LoanApp.Services.Interfaces
 {
@@ -10,5 +9,7 @@ namespace LoanApp.Services.Interfaces
         Task<GetLoanApplicationDto> GetLoanApplicationByIdAsync(int id);
         Task<List<GetLoanApplicationDto>> GetLoanApplicationsAsync();
         Task UpdateLoanApplicationAsync(UpdateLoanApplicationDto loanDto);
+        Task UpdateLoanApplicationStatusAsync(UpdateLoanApplicationStatusDto loanDto);
+
     }
 }
