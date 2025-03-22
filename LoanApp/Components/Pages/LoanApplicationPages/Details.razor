@@ -1,0 +1,56 @@
+﻿@page "/loanapplications/details"
+@using Microsoft.EntityFrameworkCore
+@using LoanApp.Models.Entities
+@inject IDbContextFactory<LoanApp.Data.LoanAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>LoanApplication</h2>
+    <hr />
+    @if (loanapplication is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">ApplicantName</dt>
+            <dd class="col-sm-10">@loanapplication.ApplicantName</dd>
+            <dt class="col-sm-2">LoanTerm</dt>
+            <dd class="col-sm-10">@loanapplication.LoanTerm</dd>
+            <dt class="col-sm-2">LoanAmount</dt>
+            <dd class="col-sm-10">@loanapplication.LoanAmount</dd>
+            <dt class="col-sm-2">IsActive</dt>
+            <dd class="col-sm-10">@loanapplication.IsActive</dd>
+            <dt class="col-sm-2">LoanStatus</dt>
+            <dd class="col-sm-10">@loanapplication.LoanStatus</dd>
+            <dt class="col-sm-2">ApplicationDate</dt>
+            <dd class="col-sm-10">@loanapplication.ApplicationDate</dd>
+        </dl>
+        <div>
+            <a href="@($"/loanapplications/edit?id={loanapplication.Id}")">Edit</a> |
+            <a href="@($"/loanapplications")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private LoanApplication? loanapplication;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        loanapplication = await context.LoanApplication.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (loanapplication is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

@@ -1,0 +1,85 @@
+﻿@page "/loanapplications/create"
+@using Microsoft.EntityFrameworkCore
+@using LoanApp.Models.Entities
+@inject IDbContextFactory<LoanApp.Data.LoanAppContext> DbFactory
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>LoanApplication</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="LoanApplication" OnValidSubmit="AddLoanApplication" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="applicantname" class="form-label">Applicant Name</label> 
+                <InputText id="applicantname" @bind-Value="LoanApplication.ApplicantName" class="form-control" /> 
+                <ValidationMessage For="() => LoanApplication.ApplicantName" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="loanterm" class="form-label">Loan Term:</label> 
+                <InputNumber id="loanterm" @bind-Value="LoanApplication.LoanTerm" class="form-control" /> 
+                <ValidationMessage For="() => LoanApplication.LoanTerm" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="loanamount" class="form-label">Loan Amount:</label> 
+                <InputNumber id="loanamount" @bind-Value="LoanApplication.LoanAmount" class="form-control" /> 
+                <ValidationMessage For="() => LoanApplication.LoanAmount" class="text-danger" /> 
+            </div>        
+            @* <div class="mb-3">
+                <label for="isactive" class="form-label">IsActive:</label> 
+                <InputCheckbox id="isactive" @bind-Value="LoanApplication.IsActive" class="form-check-input" /> 
+                <ValidationMessage For="() => LoanApplication.IsActive" class="text-danger" /> 
+            </div> *@        
+            <div class="mb-3">
+                <label for="loanstatus" class="form-label">Loan Status:</label>
+                <InputSelect id="loanstatus" @bind-Value="LoanApplication.LoanStatus" class="form-control">
+                    <option value="1">Pending</option>
+                    <option value="2">Approve</option>
+                    <option value="3">Rejected</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => LoanApplication.LoanStatus)" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="applicationdate" class="form-label">ApplicationDate:</label> 
+                <InputDate id="applicationdate" @bind-Value="LoanApplication.ApplicationDate" class="form-control" /> 
+                <ValidationMessage For="() => LoanApplication.ApplicationDate" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/loanapplications">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm (FormName ="create")]
+    private LoanApplication LoanApplication { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddLoanApplication()
+    {
+        var context = DbFactory.CreateDbContext();
+        try
+        {
+            context.LoanApplication.Add(LoanApplication);
+            await context.SaveChangesAsync();
+
+            NavigationManager.NavigateTo("/loanapplications", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding loan application: {ex.Message}\n{ex.StackTrace}");
+        }
+        finally
+        {
+            context.Dispose();
+        }
+    }
+}

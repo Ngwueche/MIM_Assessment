@@ -1,0 +1,75 @@
+﻿@page "/loanapplications/delete"
+@using Microsoft.EntityFrameworkCore
+@using LoanApp.Models.Entities
+@inject IDbContextFactory<LoanApp.Data.LoanAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<p>Are you sure you want to delete this?</p>
+<div>
+    <h2>LoanApplication</h2>
+    <hr />
+    @if (loanapplication is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">ApplicantName</dt>
+            <dd class="col-sm-10">@loanapplication.ApplicantName</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">LoanTerm</dt>
+            <dd class="col-sm-10">@loanapplication.LoanTerm</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">LoanAmount</dt>
+            <dd class="col-sm-10">@loanapplication.LoanAmount</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">IsActive</dt>
+            <dd class="col-sm-10">@loanapplication.IsActive</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">LoanStatus</dt>
+            <dd class="col-sm-10">@loanapplication.LoanStatus</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">ApplicationDate</dt>
+            <dd class="col-sm-10">@loanapplication.ApplicationDate</dd>
+        </dl>
+        <EditForm method="post" Model="loanapplication" OnValidSubmit="DeleteLoanApplication" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(loanapplication is null)">Delete</button> |
+            <a href="/loanapplications">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private LoanApplication? loanapplication;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        loanapplication = await context.LoanApplication.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (loanapplication is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteLoanApplication()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.LoanApplication.Remove(loanapplication!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/loanapplications");
+    }
+}

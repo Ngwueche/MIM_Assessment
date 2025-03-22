@@ -1,0 +1,119 @@
+﻿@page "/loanapplications/edit"
+@using Microsoft.EntityFrameworkCore
+@using LoanApp.Models.Entities
+@inject IDbContextFactory<LoanApp.Data.LoanAppContext> DbFactory
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>LoanApplication</h2>
+<hr />
+@if (LoanApplication is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="LoanApplication" OnValidSubmit="UpdateLoanApplication" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="LoanApplication.Id" value="@LoanApplication.Id" />
+                <div class="mb-3">
+                    <label for="applicantname" class="form-label">ApplicantName:</label>
+                    <InputText id="applicantname" @bind-Value="LoanApplication.ApplicantName" class="form-control" />
+                    <ValidationMessage For="() => LoanApplication.ApplicantName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="loanterm" class="form-label">LoanTerm:</label>
+                    <InputNumber id="loanterm" @bind-Value="LoanApplication.LoanTerm" class="form-control" />
+                    <ValidationMessage For="() => LoanApplication.LoanTerm" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="loanamount" class="form-label">LoanAmount:</label>
+                    <InputNumber id="loanamount" @bind-Value="LoanApplication.LoanAmount" class="form-control" />
+                    <ValidationMessage For="() => LoanApplication.LoanAmount" class="text-danger" />
+                </div>
+                @* <div class="mb-3">
+                    <label for="isactive" class="form-label">IsActive:</label>
+                    <InputCheckbox id="isactive" @bind-Value="LoanApplication.IsActive" class="form-check-input" />
+                    <ValidationMessage For="() => LoanApplication.IsActive" class="text-danger" />
+                </div> *@
+                @* <div class="mb-3">
+                    <label for="loanstatus" class="form-label">LoanStatus:</label>
+                    <InputSelect id="loanstatus" @bind-Value="LoanApplication.LoanStatus" class="form-control">
+                        <option value="1">Pending</option>
+                        <option value="2">Approve</option>
+                        <option value="3">Rejected</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => LoanApplication.LoanStatus)" class="text-danger" />
+                </div> *@
+                @* <div class="mb-3">
+                    <label for="applicationdate" class="form-label">ApplicationDate:</label>
+                    <InputDate id="applicationdate" @bind-Value="LoanApplication.ApplicationDate" class="form-control" />
+                    <ValidationMessage For="() => LoanApplication.ApplicationDate" class="text-danger" />
+                </div> *@
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/loanapplications">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    [SupplyParameterFromForm (FormName = "edit")]
+    private LoanApplication? LoanApplication { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        LoanApplication ??= await context.LoanApplication.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (LoanApplication is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async void UpdateLoanApplication()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(LoanApplication!).State = EntityState.Modified;
+
+        try
+        {
+            context.SaveChanges();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!LoanApplicationExists(LoanApplication!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/loanapplications");
+    }
+
+    private bool LoanApplicationExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.LoanApplication.Any(e => e.Id == id);
+    }
+}

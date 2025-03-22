@@ -1,0 +1,41 @@
+﻿@page "/loanapplications"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using LoanApp.Models.Entities
+@using LoanApp.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<LoanApp.Data.LoanAppContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="loanapplications/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.LoanApplication">
+    <PropertyColumn Property="loanapplication => loanapplication.ApplicantName" />
+    <PropertyColumn Property="loanapplication => loanapplication.LoanTerm" />
+    <PropertyColumn Property="loanapplication => loanapplication.LoanAmount" />
+    @* <PropertyColumn Property="loanapplication => loanapplication.IsActive" /> *@
+    <PropertyColumn Property="loanapplication => loanapplication.LoanStatus" />
+    <PropertyColumn Property="loanapplication => loanapplication.ApplicationDate" Title="Application Date" Format="MM/dd/yyyy" />
+
+    <TemplateColumn Context="loanapplication">
+        <a href="@($"loanapplications/edit?id={loanapplication.Id}")">Edit</a> |
+        <a href="@($"loanapplications/details?id={loanapplication.Id}")">Details</a> |
+        <a href="@($"loanapplications/delete?id={loanapplication.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private LoanAppContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
