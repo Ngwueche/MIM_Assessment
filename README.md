@@ -24,7 +24,7 @@ This is a **Loan Application Management System** built with **ASP.NET Core Blazo
 
 Before running the project, ensure you have the following installed on your machine:
 
-- [.NET9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (or later)
+- [.NET9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) (or [Visual Studio Code](https://code.visualstudio.com/))
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or [SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-downloads))
 - [EF Core Tools](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) (for database migrations)
