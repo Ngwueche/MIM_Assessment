@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using LoanApp.Dtos;
 using LoanApp.Models.Enums;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -19,5 +20,6 @@ namespace LoanApp.Models.Entities
         public bool IsActive { get; set; }//implement SoftDelete
         public LoanStatus LoanStatus { get; set; }
         public DateTime ApplicationDate { get; set; } = DateTime.Now;
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using LoanApp.Services.Interfaces
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -8,3 +9,7 @@
 @using Microsoft.JSInterop
 @using LoanApp
 @using LoanApp.Components
+@using LoanApp.Dtos
+@inject ILoanApplicationService service
+@inject NavigationManager NavigationManager
+@using Serilog
