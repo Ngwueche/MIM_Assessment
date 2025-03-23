@@ -1,6 +1,4 @@
 # MIM_Assessment
-Below is a comprehensive **README** content for your project. It includes setup instructions, database setup (using EF Core and migrations), and any additional steps or prerequisites for running the application.
-
 ---
 
 # LoanApplication
